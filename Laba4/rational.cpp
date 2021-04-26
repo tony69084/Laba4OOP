@@ -1,148 +1,72 @@
 ﻿#include <iostream>
 #include <cmath>
-#include "rational.h"
+#include "Rational.h"
 using namespace std;
-
-Rational::Rational()
+Rational::Rational() //конструктор по умолчанию
 {
-	numerator = 0;
+	nominator = 0;
 	denominator = 1;
-	intPart = 0;
-	sign = 1;
 }
-
-Rational::Rational(int n, int d, int i, int s)
+Rational::Rational(int nominator) //конструктор с параметром nominator
 {
-	intPart = i;
-	numerator = n;
-	denominator = d;
-	sign = s;
-	GetMixedView();
+	this->nominator = nominator;
+	denominator = 1;
 }
-
-int Rational::getSign() const { return this->sign; }
-int Rational::getIntPart() const { return this->intPart; }
-int Rational::getNumerator() const { return this->numerator; }
-int Rational::getDenominator() const { return this->denominator; }
-
-Rational Rational::FromDoubleToRational(double num)
+Rational::Rational(int nominator, int denominator) //конструктор для обоих параметров
 {
-	double eps = 0.01;
-
-	for (int i = 1;; i++) {
-		double tem = num / (1.0 / i);
-		if (fabs(tem - round(tem)) < eps) {
-			return Rational(round(tem), i, 0, 0);
-			break;
-		}
-	}
+	this->nominator = nominator;
+	this->denominator = denominator;
 }
-
-Rational::operator double()
+int Rational::GetNominator() const
 {
-	double res = sign * (intPart * denominator + numerator);
-	return res / denominator;
+	return nominator;
 }
-
-
-ostream& operator << (ostream& out, const Rational& a)
+int Rational::GetDenominator() const
 {
-	if (a.getSign() < 0)
-	{
-		out << "-";
-	}
-	if (a.getIntPart() != 0)
-	{
-		out << a.getIntPart() << " ";
-	}
-	if (a.getNumerator() != 0)
-	{
-		out << a.getNumerator() << "/" << a.getDenominator();
-	}
-	if (a.getIntPart() == 0 && a.getNumerator() == 0)
-	{
-		out << "0";
-	}
-	else
-	{
-		out << " ";
-	}
-	return out;
+	return denominator;
 }
-
-
-Rational Rational::operator + (Rational a)
+void Rational::drob() //процедура сокращения
 {
-	Rational res;
-	res.numerator = sign * (intPart * denominator + numerator) * a.denominator + a.sign * (a.intPart * a.denominator + a.numerator) * denominator;
-	res.denominator = denominator * a.denominator;
-	if (res.numerator < 0)
+	if (nominator != 0)
 	{
-		res.numerator *= -1; res.sign = -1;
-	}
-	res.GetMixedView();
-	return res;
-}
-
-
-Rational Rational::operator - (Rational a)
-{
-	Rational res;
-	res.numerator = sign * (intPart * denominator + numerator) * a.denominator - a.sign * (a.intPart * a.denominator + a.numerator) * denominator;
-	res.denominator = denominator * a.denominator;
-	if (res.numerator < 0)
-	{
-		res.numerator *= -1; res.sign = -1;
-	}
-	res.GetMixedView();
-	return res;
-}
-
-Rational Rational::operator * (Rational a)
-{
-	Rational res;
-	res.numerator = (sign * (intPart * denominator + numerator)) * (a.sign * (a.intPart * a.denominator + a.numerator));
-	res.denominator = denominator * a.denominator;
-	if (res.numerator < 0)
-	{
-		res.numerator *= -1; res.sign = -1;
-	}
-	res.GetMixedView();
-	return res;
-}
-
-
-void Rational::GetMixedView()
-{
-	GetIntPart();
-	Cancellation();
-}
-
-void Rational::GetIntPart()
-{
-	if (numerator >= denominator)
-	{
-		intPart += (numerator / denominator);
-		numerator %= denominator;
-	}
-}
-
-void Rational::Cancellation()
-{
-	if (numerator != 0)
-	{
-		int m = denominator,
-			n = numerator,
-			ost = m % n;
+		int m = denominator, n = nominator, ost = m % n;
 		while (ost != 0)
 		{
-			m = n; n = ost;
+			m = n;
+			n = ost;
 			ost = m % n;
 		}
-		int nod = n;
-		if (nod != 1)
+		int NOD = n;
+		if (NOD != 1)
 		{
-			numerator /= nod; denominator /= nod;
+			nominator /= NOD;
+			denominator /= NOD;
 		}
 	}
+}
+ostream& operator<<(ostream& out, const Rational& Rational) //операция вывода
+{
+	out << Rational.nominator << "/" << Rational.denominator;
+	return out;
+}
+istream& operator>>(istream& in, Rational& Rational) //операция ввода
+{
+	in >> Rational.nominator >> Rational.denominator;
+	return in;
+}
+Rational operator+(Rational a, Rational b) //перегрузка операции +
+{
+	return Rational(a.GetNominator() * b.GetDenominator() + b.GetNominator() * a.GetDenominator(), a.GetDenominator() * b.GetDenominator());
+}
+Rational operator-(Rational a, Rational b) //перегрузка операции -
+{
+	return Rational(a.GetNominator() * b.GetDenominator() - b.GetNominator() * a.GetDenominator(), a.GetDenominator() * b.GetDenominator());
+};
+Rational operator*(Rational a, Rational b) //перегрузка операции *
+{
+	return Rational(a.GetNominator() * b.GetNominator(), a.GetDenominator() * b.GetDenominator());
+}
+Rational operator/(Rational a, Rational b) //перегрузка операции /
+{
+	return Rational(a.GetNominator() * b.GetDenominator(), a.GetDenominator() * b.GetNominator());
 }

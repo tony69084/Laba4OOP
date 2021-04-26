@@ -1,36 +1,21 @@
-#define _CRT_SECURE_NO_WARNINGS
-#pragma once
-#include <cmath>
 #include <iostream>
-
-using namespace std;
-
+#include <cmath>
 class Rational
 {
 private:
-
-	int sign;
-	int intPart;
-	int numerator;
+	int nominator;
 	int denominator;
-	void GetMixedView();
-	void Cancellation();
-	void GetIntPart();
-
+	void drob();
 public:
-
 	Rational();
-	Rational(int n, int d, int i, int s);
-	int getSign() const;
-	int getIntPart() const;
-	int getNumerator() const;
-	int getDenominator() const;
-	Rational FromDoubleToRational(double num);
-
-	Rational operator + (Rational);
-	Rational operator - (Rational);
-	Rational operator * (Rational);
-
-	operator double();
-	friend ostream& operator<<(ostream& out, const Rational& a);
+	Rational(int);
+	Rational(int, int);
+	int GetNominator() const;
+	int GetDenominator() const;
+	friend std::ostream& operator<<(std::ostream& out, const Rational& Rational);
+	friend std::istream& operator>>(std::istream& in, Rational& Rational);
+	friend Rational operator+(Rational a, Rational b);
+	friend Rational operator-(Rational a, Rational b);
+	friend Rational operator*(Rational a, Rational b);
+	friend Rational operator/(Rational a, Rational b);
 };
